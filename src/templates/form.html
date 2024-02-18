@@ -1,0 +1,87 @@
+<html>
+<head>
+   <link rel="stylesheet" href="{{ url_for('static',filename='stylesheets/stil.css') }}">
+<title>TTV</title>
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+
+
+<div class="form">
+
+      <div class="title">Text to video</div>
+
+<form method="POST" action="/">
+
+   <div class="input-container ic2">
+      <input name="title" class="input" size="50" id="title" type="text" placeholder=" "><br><br>
+      <div class="cut cut-short"></div>
+      <label for="title" class="placeholder">Title</label>
+   </div>
+
+   <div class="input-container ic2">
+      <input name="text" class="input" size="80" id="text" type="text" placeholder=" "><br><br>
+      <div class="cut cut-short"></div>
+      <label for="text" class="placeholder">Text</label>
+   </div>
+
+   <input type="submit" onclick="myFunction()" class="submit" value="Generate video">
+</form>
+
+<br>
+{% block content %}
+  <table id="data" class="tabela">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>VideoId</th>
+        <th>URL</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for video in videos %}
+        <tr>
+          <td>{{ video.status }}</td>
+          <td>{{ video.id }}</td>
+          <td><a href="{{ video.url }}">LINK TO VIDEO</a></td>
+	  <td>
+     <div style="display: flex;">
+      <form action="{{ url_for('my_form_delete') }}" method="GET">
+	 <input type="hidden" name="vidId" value="{{ video.id }}">
+        <button type="submit">Delete</button>
+      </form>
+      <form action="{{ url_for('my_form_upload') }}" method="GET">
+         <input type="hidden" name="vidUrl" value="{{ video.url }}">
+        <button type="submit">Upload to Youtube</button>
+      </form>
+     </div>
+	  </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+
+</div>
+
+
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script>
+      var messages = {{ messages | safe }};
+      for (var i=0; i<messages.length; i++) {
+        alert(messages[i]);
+        console.log(messages[i]);
+      }
+    </script>
+  {% endif %}
+{% endwith %}
+
+
+
+
+
+</body>
+</html>
