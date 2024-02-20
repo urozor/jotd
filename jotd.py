@@ -141,7 +141,7 @@ def my_form_save_bearer():
     bearer = request.form['bearer']
     if bearer:
         response = make_response(redirect('/'))  # Create a redirect response
-        response.set_cookie('bearer', "Bearer " + bearer)
+        response.set_cookie('bearer', "Bearer " + bearer, max_age=2592000)
         return response
     else:
         return 'Error: Bearer field is missing in the POST request.'
