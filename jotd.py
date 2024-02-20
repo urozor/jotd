@@ -136,6 +136,7 @@ def my_form():
     else:
         return render_template('bearer_input.html')
 
+#called when API key is posted
 @app.route('/save_bearer', methods=['POST'])
 def my_form_save_bearer():
     bearer = request.form['bearer']
