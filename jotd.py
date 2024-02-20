@@ -1,6 +1,6 @@
 import json
 import time
-from flask import Flask, request, render_template, redirect, flash
+from flask import Flask, request, render_template, redirect, flash, make_response
 import requests
 import os
 from flask import Flask, request, redirect, url_for
@@ -17,8 +17,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1)
 
 headers = {
     "accept": "application/json",
-    "content-type": "application/json",
-    "Authorization": "Bearer <your key>"
+    "content-type": "application/json"
 }
 
 
@@ -27,7 +26,6 @@ CLIENT_SECRETS_FILE = 'client_secrets.json'
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
-
 
 
 def download_video(url):
@@ -97,6 +95,8 @@ def upload_video(youtube, video_path, title, description, tags=None, category_id
 def is_rendering(vId):
     try:
         url = " https://apis.elai.io/api/v1/videos/" + vId
+        bearer = request.cookies.get('bearer')
+        headers['Authorization'] = bearer
         response = requests.get(url, headers=headers)
 	#mojlib.prettyprint(response.text)
         status = response.json()["status"]
@@ -114,26 +114,42 @@ def is_rendering(vId):
 def my_form():
 
 
-    url = " https://apis.elai.io/api/v1/videos/"
+    # Get the value of a cookie named 'bearer'
+    bearer = request.cookies.get('bearer')
 
-    response = requests.get(url, headers=headers)
-#mojlib.prettyprint(response.text)
+    # Check if the cookie exists and is not None
+    if bearer is not None:
+        
+        url = " https://apis.elai.io/api/v1/videos/"
+        headers['Authorization'] = bearer
+        response = requests.get(url, headers=headers)
+        #mojlib.prettyprint(response.text)
+        #status = response.json()["status"]
+        videos = []
+        for element in response.json()["videos"]:
+            url = "-"
+            if element["status"] == "ready":
+                url = element["url"]
+            videos.append({"status": element["status"], "id": element["_id"], "url": url})
 
+        return render_template('form.html', videos = videos)
+    else:
+        return render_template('bearer_input.html')
 
-#status = response.json()["status"]
-    videos = []
-    for element in response.json()["videos"]:
-        url = "-"
-        if element["status"] == "ready":
-            url = element["url"]
-        videos.append({"status": element["status"], "id": element["_id"], "url": url})
+@app.route('/save_bearer', methods=['POST'])
+def my_form_save_bearer():
+    bearer = request.form['bearer']
+    if bearer:
+        response = make_response(redirect('/'))  # Create a redirect response
+        response.set_cookie('bearer', "Bearer " + bearer)
+        return response
+    else:
+        return 'Error: Bearer field is missing in the POST request.'
 
-    return render_template(
-      'form.html',
-      videos = videos)
 
 @app.route('/', methods=['POST'])
 def my_form_post():
+    bearer = request.cookies.get('bearer')
     title = request.form['title']
     text = request.form['text']
     #expireUTC = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(expireUTCsec))
@@ -273,6 +289,7 @@ def my_form_post():
     print(type(headers))
     print(payload)
     print(headers)
+    headers['Authorization'] = bearer
     response = requests.post(url, json=payload, headers=headers)
     print(response.text)
     videoId = response.json()["_id"]
@@ -291,6 +308,8 @@ def my_form_post():
 def my_form_delete():
     vidId = request.args.get('vidId')
     url = "https://apis.elai.io/api/v1/videos/" + vidId
+    bearer = request.cookies.get('bearer')
+    headers['Authorization'] = bearer
     response = requests.delete(url, headers=headers)
     #print(response.text)
     flash("Deleted", 'OK')
@@ -320,7 +339,7 @@ def my_form_upload():
 if __name__ == "__main__":
     if 'videoId' not in globals():
         videoId = "x"
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    app.run()
 
 
 
