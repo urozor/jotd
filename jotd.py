@@ -124,17 +124,17 @@ def my_form():
         headers['Authorization'] = bearer
         try:
             response = requests.get(url, headers=headers)
+            #mojlib.prettyprint(response.text)
+            #status = response.json()["status"]
+            videos = []
+            for element in response.json()["videos"]:
+                url = "-"
+                if element["status"] == "ready":
+                    url = element["url"]
+                videos.append({"status": element["status"], "id": element["_id"], "url": url})
         except:
             return("An error ocurred. Probably wrong API key. Delete site data and retry.")
-        #mojlib.prettyprint(response.text)
-        #status = response.json()["status"]
-        videos = []
-        for element in response.json()["videos"]:
-            url = "-"
-            if element["status"] == "ready":
-                url = element["url"]
-            videos.append({"status": element["status"], "id": element["_id"], "url": url})
-
+        
         return render_template('form.html', videos = videos)
     else:
         return render_template('bearer_input.html')
