@@ -122,7 +122,10 @@ def my_form():
         
         url = " https://apis.elai.io/api/v1/videos/"
         headers['Authorization'] = bearer
-        response = requests.get(url, headers=headers)
+        try:
+            response = requests.get(url, headers=headers)
+        except:
+            return("An error ocurred. Probably wrong API key. Delete site data and retry.")
         #mojlib.prettyprint(response.text)
         #status = response.json()["status"]
         videos = []
