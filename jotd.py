@@ -347,8 +347,6 @@ def generate():
         if webhook_received:
             yield 'data: {}\n\n'.format('Webhook received')
             webhook_received = False
-        # Adjust the delay as needed
-        time.sleep(1)    
     
 
 @app.route('/events')
@@ -365,11 +363,6 @@ def my_form_update():
     webhook_received = True
     return "Received", 200
 
-
-
-# Generator function to send SSE
-def generate():
-    yield 'data: {}\n\n'.format('Webhook received')
 
 
 if __name__ == "__main__":
