@@ -339,11 +339,14 @@ def my_form_upload():
     #flash(resp, 'OK')
     #return redirect(request.referrer)
 
-@app.route('/webhook')
+@app.route('/webhook', methods=['POST'])
 def my_form_update():
-    print(response.text)
+    request_data = request.get_json()
+    event = request_data.get('event')
+    error = request_data.get('error')
     flash("webhook called", 'OK')
-    return redirect(request.referrer)
+    print("event:" + event + "    error:"+ error)
+    return redirect(request.referrer),200
 
     #return 'Data with ID {} deleted.'.format(vidId)
 
