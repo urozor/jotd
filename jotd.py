@@ -345,15 +345,15 @@ def my_form_upload():
 def generate():
     yield 'data: {}\n\n'.format('Webhook received')
 
-@app.route('/events')
+@app.route('/events2')
 def events():
     return Response(generate(), mimetype='text/event-stream')
 
 @app.route('/webhook', methods=['POST'])
 def my_form_update():
-    global webhook_received
-    webhook_received = True
-    return 'Webhook received!', 200
+    webhook_data = request.json
+    print("Received webhook data:", webhook_data)
+    return "Received", 200
 
 
 
