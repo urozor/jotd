@@ -339,6 +339,13 @@ def my_form_upload():
     #flash(resp, 'OK')
     #return redirect(request.referrer)
 
+@app.route('/webhook')
+def my_form_update():
+    print(response.text)
+    flash("webhook called", 'OK')
+    return redirect(request.referrer)
+
+    #return 'Data with ID {} deleted.'.format(vidId)
 
 if __name__ == "__main__":
     if 'videoId' not in globals():
