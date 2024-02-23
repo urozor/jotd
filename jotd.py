@@ -361,10 +361,6 @@ def my_form_update():
 def generate():
     yield 'data: {}\n\n'.format('Webhook received')
 
-@app.route('/events')
-def events():
-    return Response(generate(), mimetype='text/event-stream')
-
 
 if __name__ == "__main__":
     if 'videoId' not in globals():
