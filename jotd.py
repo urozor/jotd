@@ -351,6 +351,7 @@ def generate():
         if webhook_received:
             yield 'data: {}\n\n'.format('Webhook received')
             webhook_received = False
+        time.sleep(1)
     
 
 @app.route('/events')
