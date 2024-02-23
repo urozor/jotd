@@ -343,9 +343,15 @@ def my_form_upload():
 
 # Generator function to send SSE
 def generate():
-    yield 'data: {}\n\n'.format('Webhook received')
+    while True:
+        if webhook_received:
+            yield 'data: {}\n\n'.format('Webhook received')
+            webhook_received = False
+        # Adjust the delay as needed
+        time.sleep(1)    
+    
 
-@app.route('/events2')
+@app.route('/events')
 def events():
     return Response(generate(), mimetype='text/event-stream')
 
@@ -353,6 +359,10 @@ def events():
 def my_form_update():
     webhook_data = request.json
     print("Received webhook data:", webhook_data)
+    #this is used for SSE function:
+    global webhook_received
+    # Set the flag to indicate that a webhook has been received
+    webhook_received = True
     return "Received", 200
 
 
