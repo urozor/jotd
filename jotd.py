@@ -20,6 +20,10 @@ headers = {
     "content-type": "application/json"
 }
 
+global webhook_received
+webhook_received = False
+
+
 
 # YouTube API credentials
 CLIENT_SECRETS_FILE = 'client_secrets.json'
@@ -358,7 +362,6 @@ def my_form_update():
     webhook_data = request.json
     print("Received webhook data:", webhook_data)
     #this is used for SSE function:
-    global webhook_received
     # Set the flag to indicate that a webhook has been received
     webhook_received = True
     return "Received", 200
