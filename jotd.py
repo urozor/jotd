@@ -1,6 +1,6 @@
 import json
 import time
-from flask import Flask, request, render_template, redirect, flash, make_response
+from flask import Flask, request, render_template, redirect, flash, make_response, Response
 import requests
 import os
 from flask import Flask, request, redirect, url_for
@@ -339,16 +339,32 @@ def my_form_upload():
     #flash(resp, 'OK')
     #return redirect(request.referrer)
 
+
+
+# Generator function to send SSE
+def generate():
+    yield 'data: {}\n\n'.format('Webhook received')
+
+@app.route('/events')
+def events():
+    return Response(generate(), mimetype='text/event-stream')
+
 @app.route('/webhook', methods=['POST'])
 def my_form_update():
-    request_data = request.get_json()
-    event = request_data.get('event')
-    error = request_data.get('error')
-    flash("webhook called", 'OK')
-    print("event:" + event + "    error:"+ error)
-    return redirect(request.referrer),200
+    global webhook_received
+    webhook_received = True
+    return 'Webhook received!', 200
 
-    #return 'Data with ID {} deleted.'.format(vidId)
+
+
+# Generator function to send SSE
+def generate():
+    yield 'data: {}\n\n'.format('Webhook received')
+
+@app.route('/events')
+def events():
+    return Response(generate(), mimetype='text/event-stream')
+
 
 if __name__ == "__main__":
     if 'videoId' not in globals():

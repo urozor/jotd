@@ -80,7 +80,14 @@
 {% endwith %}
 
 
+<script>
+  var eventSource = new EventSource('/events');
 
+  eventSource.onmessage = function(event) {
+      // Refresh the page when a message is received
+      location.reload();
+  };
+</script>
 
 
 </body>
