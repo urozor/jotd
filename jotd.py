@@ -20,7 +20,6 @@ headers = {
     "content-type": "application/json"
 }
 
-global webhook_received
 webhook_received = False
 
 
